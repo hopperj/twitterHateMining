@@ -35,7 +35,7 @@ currently all fields (including createdAt) are text fields.
 
 
 
-import twitter
+import tweepy
 from learning import *
 from time import sleep
 from datetime import datetime, timedelta
@@ -53,11 +53,61 @@ con = db.connect( config.get('mysql','address'), config.get('mysql','user'),
 cur = con.cursor()
 
 
-api = twitter.Api(consumer_key=config.get('twitter', 'consumer_key'), \
-                  consumer_secret=config.get('twitter', 'consumer_secret'), \
-                  access_token_key=config.get('twitter', 'access_token_key'), \
-                  access_token_secret=config.get('twitter', 'access_token_secret'), \
-verified = api.VerifyCredentials()
+auth = tweepy.OAuthHandler(
+    config.get('twitter', 'consumer_key'),
+    config.get('twitter', 'consumer_secret'),
+    )
+auth.set_access_token(
+    config.get('twitter', 'access_token'),
+    config.get('twitter', 'access_token_secret'),
+    )
+
+api = tweepy.API(auth)
+
+
+ret = api.search(q="h", lang="en")
+
+keys = [
+    'author',
+    'contributors',
+    'coordinates',
+    'created_at',
+    'destroy',
+    'entities',
+    'favorite',
+    'favorite_count',
+    'favorited',
+    'geo',
+    'id',
+    'id_str',
+    'in_reply_to_screen_name',
+    'in_reply_to_status_id',
+    'in_reply_to_status_id_str',
+    'in_reply_to_user_id',
+    'in_reply_to_user_id_str',
+    'is_quote_status',
+    'lang',
+    'metadata',
+    'parse',
+    'parse_list',
+    'place',
+    'possibly_sensitive',
+    'retweet',
+    'retweet_count',
+    'retweeted',
+    'retweets',
+    'source',
+    'source_url',
+    'text',
+    'truncated',
+    'user',
+]
+
+print '\n'.join( [ str(r.geo)+", "+str(r.place) for r in ret ] )
+
+
+
+sys.exit(0)
 
 words = [# A
          # B
@@ -84,7 +134,7 @@ words = [# A
          'wetback','wigger','wop', # W
          # X
          # Y
-         # Z         
+         # Z
          ]
 
 term_string = '"%s"'%words[0]
@@ -195,9 +245,9 @@ con.close()
 
 class Status(__builtin__.object)
  |  A class representing the Status structure used by the twitter API.
- |  
+ |
  |  The Status structure exposes the following properties:
- |  
+ |
  |    status.created_at
  |    status.created_at_in_seconds # read only
  |    status.favorited
