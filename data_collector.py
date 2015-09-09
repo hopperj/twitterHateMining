@@ -65,7 +65,7 @@ auth.set_access_token(
 api = tweepy.API(auth)
 
 
-ret = api.search(q="h", lang="en")
+# ret = api.search(q="h", lang="en")
 
 keys = [
     'author',
@@ -103,11 +103,11 @@ keys = [
     'user',
 ]
 
-print '\n'.join( [ str(r.geo)+", "+str(r.place) for r in ret ] )
+# print '\n'.join( [ str(r.geo)+", "+str(r.place) for r in ret ] )
 
 
 
-sys.exit(0)
+# sys.exit(0)
 
 words = [# A
          # B
@@ -136,6 +136,23 @@ words = [# A
          # Y
          # Z
          ]
+
+allWords = " OR ".join(words)
+print "Using q=",allWords
+ret = None
+while ret is None:
+    print "Searching ..."
+    ret = api.search(q=allWords, lang="en", count=1000, wait_on_rate_limit=True, monitor_rate_limit=True, since='2015-06-26 10:01:25')
+if ret is None:
+    print "Exiting"
+    sys.exit(0)
+print "Found %d things"%len(ret)
+print "\n\n\n"
+print '\n\n'.join( [ str(r.geo)+", "+str(r.place)+", "+str(r.text) for r in ret ] )
+# help(ret[0])
+# print '\n'.join( [ str(r.geo)+", "+str(r.place) for r in ret if len(r.geo)>0 ] )
+
+sys.exit(0)
 
 term_string = '"%s"'%words[0]
 for word in words:
